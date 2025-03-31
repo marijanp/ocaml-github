@@ -872,12 +872,13 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
     (* Add the correct mime-type header and the authentication token. *)
     let realize_headers
         ~token
-        ?(media_type="application/vnd.github.v3+json")
+        ?(media_type="application/vnd.github+json")
         headers =
       let headers = C.Header.add_opt headers "accept" media_type in
+      let headers = C.Header.add headers "X-GitHub-Api-Version" "2022-11-28" in
       match token with
       | None -> headers
-      | Some token -> C.Header.add headers "Authorization" ("token " ^ token)
+      | Some token -> C.Header.add headers "Authorization" ("Bearer " ^ token)
 
     let idempotent meth
         ?(rate=Core) ?media_type ?headers ?token ?params ~fail_handlers ~expected_code ~uri
