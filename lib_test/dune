@@ -1,5 +1,5 @@
 (executables
- (libraries cohttp-lwt-unix github_unix atdgen stringext cmdliner)
+ (libraries cohttp-lwt-unix github_unix atdgen-runtime stringext cmdliner)
   (names 
    checks
    contributors
