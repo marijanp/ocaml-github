@@ -499,6 +499,9 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
 
     let emojis =
       Uri.of_string (Printf.sprintf "%s/emojis" api)
+
+    let installations =
+      Uri.of_string (Printf.sprintf "%s/app/installations" api)
   end
 
   module C = Cohttp
@@ -1864,6 +1867,26 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
     let delete ?token ~user ~repo ~name () =
       let uri = URI.repo_label ~user ~repo ~name in
       API.delete ?token ~uri ~expected_code:`No_content (fun _ -> return ())
+  end
+
+  module App = struct
+
+    let installations ?token ?since ?per_page ?page () =
+      let params = [] in
+      let params = match since with
+        | None -> params
+        | Some s -> ("since", s)::params
+      in
+      let params = match per_page with
+        | None -> params
+        | Some i -> ("per_page", string_of_int i)::params
+      in
+      let params = match page with
+        | None -> params
+        | Some i -> ("page", string_of_int i)::params
+      in
+      let uri = URI.installations in
+      API.get_stream ?token ~params ~uri (fun b -> Lwt.return (app_installations_of_string b))
   end
 
   module Collaborator = struct
