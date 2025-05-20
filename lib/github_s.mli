@@ -1386,6 +1386,15 @@ module type Github = sig
         {{:https://docs.github.com/en/rest/apps/apps#list-installations-for-the-authenticated-app}
         Link to docs.} *)
 
+    val create_installation_access_token:
+      ?token:Token.t ->
+      installation_id: Int64.t ->
+      unit ->
+      Github_t.app_installation_token Response.t Monad.t
+    (** [create_installation_access_token ~installation_id ()] creates an installation access token
+        for the GitHub App installation with the ID [installation_id]
+        {{:https://docs.github.com/en/rest/apps/apps#create-an-installation-access-token-for-an-app}
+        Link to docs.} *)
   end
 
 
