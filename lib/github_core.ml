@@ -554,7 +554,7 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
 
     let error err = Err err
     let response r = Response r
-    let request ?token:_ ?(params=[]) ({ uri; _ } as req) reqfn =
+    let request ?(params=[]) ({ uri; _ } as req) reqfn =
       let uri = Uri.add_query_params' uri params in
       Request ({req with uri}, reqfn)
 
@@ -887,7 +887,7 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
         fn =
       fun state -> Lwt.return
         (state,
-         (Monad.(request ?token ?params
+         (Monad.(request ?params
                    {meth; uri; headers=realize_headers ~token ?media_type headers; body=""})
             (request ~rate ~token
                ((code_handler ~expected_code fn)::fail_handlers))))
@@ -904,7 +904,7 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
       ) fail_handlers in
       fun state -> Lwt.return
         (state,
-        (Monad.(request ?token ?params
+        (Monad.(request ?params
                   {meth; uri; headers=realize_headers ~token headers; body })
            (request ~rate ~token
               ((code_handler ~expected_code fn)::fail_handlers))))
