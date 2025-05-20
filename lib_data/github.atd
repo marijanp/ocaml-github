@@ -1576,3 +1576,9 @@ type app_installation = {
 } <ocaml field_prefix="app_installation_">
 
 type app_installations = app_installation list
+
+type app_installation_token = {
+  token: string;
+  expires_at: string;
+  ?repositories: repository list option;
+} <ocaml field_prefix="app_installation_token_">

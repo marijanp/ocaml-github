@@ -1382,6 +1382,13 @@ module type Github = sig
     (** [installations ()] is a stream of GitHub App installations for the given App JWT
         timestamp (YYYY-MM-DDTHH:MM:SSZ) [?since]. *)
 
+    val installation_access_token:
+      ?token:Token.t ->
+      installation_id: Int64.t ->
+      unit ->
+      Github_t.app_installation_token Response.t Monad.t
+    (** [installation_access_token ~installation_id ()] creates an installation access token
+        for the GitHub App installation with the ID [installation_id] *)
   end
 
 
