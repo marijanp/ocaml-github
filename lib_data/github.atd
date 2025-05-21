@@ -1406,6 +1406,7 @@ type check_run_app_permissions = {
 
 type check_app = {
   id: int <ocaml repr="int64">;
+  client_id: string;
   slug: string;
   node_id: string;
   owner: user;
