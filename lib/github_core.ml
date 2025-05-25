@@ -499,6 +499,12 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
 
     let emojis =
       Uri.of_string (Printf.sprintf "%s/emojis" api)
+
+    let installations =
+      Uri.of_string (Printf.sprintf "%s/app/installations" api)
+
+    let installation_access_token ~id =
+      Uri.of_string (Printf.sprintf "%s/app/installations/%Ld/access_tokens" api id)
   end
 
   module C = Cohttp
@@ -551,7 +557,7 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
 
     let error err = Err err
     let response r = Response r
-    let request ?token:_ ?(params=[]) ({ uri; _ } as req) reqfn =
+    let request ?(params=[]) ({ uri; _ } as req) reqfn =
       let uri = Uri.add_query_params' uri params in
       Request ({req with uri}, reqfn)
 
@@ -877,14 +883,14 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
       let headers = C.Header.add_opt headers "accept" media_type in
       match token with
       | None -> headers
-      | Some token -> C.Header.add headers "Authorization" ("token " ^ token)
+      | Some token -> C.Header.add headers "Authorization" ("Bearer " ^ token)
 
     let idempotent meth
         ?(rate=Core) ?media_type ?headers ?token ?params ~fail_handlers ~expected_code ~uri
         fn =
       fun state -> Lwt.return
         (state,
-         (Monad.(request ?token ?params
+         (Monad.(request ?params
                    {meth; uri; headers=realize_headers ~token ?media_type headers; body=""})
             (request ~rate ~token
                ((code_handler ~expected_code fn)::fail_handlers))))
@@ -901,7 +907,7 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
       ) fail_handlers in
       fun state -> Lwt.return
         (state,
-        (Monad.(request ?token ?params
+        (Monad.(request ?params
                   {meth; uri; headers=realize_headers ~token headers; body })
            (request ~rate ~token
               ((code_handler ~expected_code fn)::fail_handlers))))
@@ -1863,6 +1869,20 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
     let delete ?token ~user ~repo ~name () =
       let uri = URI.repo_label ~user ~repo ~name in
       API.delete ?token ~uri ~expected_code:`No_content (fun _ -> return ())
+  end
+
+  module App = struct
+    let installations ?token ?since () =
+      let params = [] in
+      let params = match since with
+        | None -> params
+        | Some s -> ("since", s)::params
+      in
+      let uri = URI.installations in
+      API.get_stream ?token ~params ~uri (fun b -> Lwt.return (app_installations_of_string b))
+    let installation_access_token ?token ~installation_id () =
+      let uri = URI.installation_access_token ~id:installation_id in
+      API.post ?token ~uri ~expected_code:`Created (fun b -> Lwt.return (app_installation_token_of_string b))
   end
 
   module Collaborator = struct

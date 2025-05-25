@@ -1406,6 +1406,7 @@ type check_run_app_permissions = {
 
 type check_app = {
   id: int <ocaml repr="int64">;
+  client_id: string;
   slug: string;
   node_id: string;
   owner: user;
@@ -1556,3 +1557,29 @@ type app_installation_event = {
   id: int <ocaml repr="int64">;
   node_id: string;
 } <ocaml field_prefix="app_installation_event_">
+
+type repository_selection = [
+  | All <json name="all">
+  | Selected <json name="selected">
+]
+
+type app_installation = {
+  id: int <ocaml repr="int64">;
+  account: user;
+  access_tokens_url: string;
+  repository_selection: repository_selection;
+  repositories_url: string;
+  app_id: int;
+  target_id: int;
+  target_type: string;
+  created_at: string;
+  updated_at: string;
+} <ocaml field_prefix="app_installation_">
+
+type app_installations = app_installation list
+
+type app_installation_token = {
+  token: string;
+  expires_at: string;
+  ?repositories: repository list option;
+} <ocaml field_prefix="app_installation_token_">

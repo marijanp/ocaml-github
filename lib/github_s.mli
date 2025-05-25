@@ -1371,6 +1371,27 @@ module type Github = sig
           in the repo [user]/[repo] has been removed. *)
   end
 
+  (** The [Apps] module offers the functionality of GitHub's
+      {{:https://docs.github.com/rest/reference/apps}apps API}. *)
+  module App : sig
+    val installations :
+      ?token:Token.t ->
+      ?since:string ->
+      unit ->
+      Github_t.app_installation Stream.t
+    (** [installations ()] is a stream of GitHub App installations for the given App JWT
+        timestamp (YYYY-MM-DDTHH:MM:SSZ) [?since]. *)
+
+    val installation_access_token:
+      ?token:Token.t ->
+      installation_id: Int64.t ->
+      unit ->
+      Github_t.app_installation_token Response.t Monad.t
+    (** [installation_access_token ~installation_id ()] creates an installation access token
+        for the GitHub App installation with the ID [installation_id] *)
+  end
+
+
   (** The [Collaborator] module exposes Github's
       {{:https://docs.github.com/rest/reference/repos#collaborators}
       collaborators API}. *)
