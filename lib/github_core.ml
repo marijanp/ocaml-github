@@ -505,6 +505,9 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
 
     let installation_access_token ~id =
       Uri.of_string (Printf.sprintf "%s/app/installations/%Ld/access_tokens" api id)
+
+    let user_app_installation ~username =
+      Uri.of_string (Printf.sprintf "%s/users/%s/installation" api username)
   end
 
   module C = Cohttp
@@ -1883,6 +1886,10 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
     let installation_access_token ?token ~installation_id () =
       let uri = URI.installation_access_token ~id:installation_id in
       API.post ?token ~uri ~expected_code:`Created (fun b -> Lwt.return (app_installation_token_of_string b))
+
+    let user_app_installation ?token ~username () =
+      let uri = URI.user_app_installation ~username in
+      API.get ?token ~uri (fun b -> Lwt.return (user_app_installation_of_string b))
   end
 
   module Collaborator = struct

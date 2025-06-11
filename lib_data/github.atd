@@ -1583,3 +1583,8 @@ type app_installation_token = {
   expires_at: string;
   ?repositories: repository list option;
 } <ocaml field_prefix="app_installation_token_">
+
+type user_app_installation = {
+  id: int <ocaml repr="int64">;
+  account: user;
+} <ocaml field_prefix="user_app_installation_">
