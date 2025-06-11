@@ -1322,6 +1322,8 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
         | `Gist -> `Gist
         | `Gollum ->
           `Gollum (Github_j.gollum_event_of_string payload)
+        | `Installation ->
+          `Installation (Github_j.app_installation_webhook_event_of_string payload)
         | `IssueComment ->
           `IssueComment (Github_j.issue_comment_event_of_string payload)
         | `Issues ->

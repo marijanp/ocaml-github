@@ -961,6 +961,7 @@ type event_type = [
   | ForkApply <json name="fork_apply">
   | Gist <json name="gist">
   | Gollum <json name="gollum">
+  | Installation <json name="installation">
   | IssueComment <json name="issue_comment">
   | Issues <json name="issues">
   | Member <json name="member">
@@ -1045,6 +1046,7 @@ type event_hook_constr = [
   | Gist <json name="GistEvent">
   (* Deprecated but there may be a payload object... *)
   | Gollum <json name="GollumEvent"> of gollum_event
+  | Installation <json name="InstallationEvent"> of app_installation_webhook_event
   | IssueComment <json name="IssueCommentEvent"> of issue_comment_event
   | Issues <json name="IssuesEvent"> of issues_event
   | Member <json name="MemberEvent"> of member_event
@@ -1562,6 +1564,17 @@ type repository_selection = [
   | All <json name="all">
   | Selected <json name="selected">
 ]
+
+type app_installation_webhook_action = [
+  | Created <json name="created">
+  | Deleted <json name="deleted">
+  | Unknown of (string * t nullable)
+]
+
+type app_installation_webhook_event = {
+  action: app_installation_webhook_action;
+  installation: app_installation;
+} <ocaml field_prefix="app_installation_webhook_event_">
 
 type app_installation = {
   id: int <ocaml repr="int64">;
