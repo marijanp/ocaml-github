@@ -1397,6 +1397,14 @@ module type Github = sig
       Github_t.user_app_installation Response.t Monad.t
     (** [user_app_installation ~username ()] gets a GitHub App installation of a user
         for the authenticated GitHub App. *)
+
+    val user_app_installation_repositories:
+      ?token:Token.t ->
+      installation_id:int64 ->
+      unit ->
+      Github_t.user_app_installation_repositories Response.t Monad.t
+    (** [user_app_installation_repositories ~installation_id ()] returns a list of repositories
+        accessible to the user access token issued to an authenticated GitHub App. *)
   end
 
 

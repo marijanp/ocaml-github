@@ -1588,3 +1588,8 @@ type user_app_installation = {
   id: int <ocaml repr="int64">;
   account: user;
 } <ocaml field_prefix="user_app_installation_">
+
+type user_app_installation_repositories = {
+  total_count: int <ocaml repr="int64">;
+  repositories: repositories;
+} <ocaml field_prefix="user_app_installation_repositories_">
