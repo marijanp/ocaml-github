@@ -1407,6 +1407,18 @@ module type Github = sig
         Link to docs.} *)
   end
 
+  module AppInstallation : sig
+    val user_app_installation_repositories:
+      ?token:Token.t ->
+      installation_id:int64 ->
+      unit ->
+      Github_t.user_app_installation_repositories Response.t Monad.t
+    (** [user_app_installation_repositories ~installation_id ()] returns a list of repositories
+        accessible to a user for a GitHub App [installation_id].
+        {{:https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28#list-repositories-accessible-to-the-user-access-token}
+        Link to docs.} *)
+  end
+
 
   (** The [Collaborator] module exposes Github's
       {{:https://docs.github.com/rest/reference/repos#collaborators}
