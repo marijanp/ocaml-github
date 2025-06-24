@@ -509,6 +509,9 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
     let user_app_installation ~username =
       Uri.of_string (Printf.sprintf "%s/users/%s/installation" api username)
 
+    let user_app_installations =
+      Uri.of_string (Printf.sprintf "%s/user/installations" api)
+
     let user_app_installation_repositories ~installation_id =
       Uri.of_string (Printf.sprintf "%s/user/installations/%Ld/repositories" api installation_id)
   end
@@ -1909,6 +1912,10 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
   end
 
   module AppInstallation = struct
+
+    let user_app_installations ?token () =
+      let uri = URI.user_app_installations in
+      API.get ?token ~uri (fun b -> Lwt.return (app_installations_list_of_string b))
 
     let user_app_installation_repositories ?token ~installation_id () =
       let uri = URI.user_app_installation_repositories ~installation_id in
