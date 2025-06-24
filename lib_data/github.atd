@@ -1597,6 +1597,11 @@ type app_installation = {
   updated_at: string;
 } <ocaml field_prefix="app_installation_">
 
+type app_installations_list = {
+  total_count: int <ocaml repr="int64">;
+  installations: app_installation list;
+}
+
 type app_installations = app_installation list
 
 type app_installation_token = {
