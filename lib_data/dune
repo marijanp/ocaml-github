@@ -3,7 +3,7 @@
  (name github_data)
  (wrapped false)
  (modules github_t github_j github_json)
- (libraries yojson atdgen))
+ (libraries yojson atdgen-runtime))
 
 (rule
  (targets github_t.ml github_t.mli)
