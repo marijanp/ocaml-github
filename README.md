@@ -115,7 +115,7 @@ $ git upload-release mirage ocaml-uri v1.4.0 release.tar.gz
 
 ### [Media Types](https://docs.github.com/rest/overview/media-types)
 
-*Supported*: application/vnd.github.v3+json
+*Supported*: application/vnd.github+json
 
 *Not yet supported*: Other media types
 
