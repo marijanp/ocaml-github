@@ -25,10 +25,10 @@ let prompt = "Enter Github password: "
 let scope =
   let parse s =
     match Github.Scope.of_string s with
-    |None -> `Error "unknown scope"
-    |Some s -> `Ok s in
+    | None -> Error (`Msg "unknown scope")
+    | Some s -> Ok s in
   let print f s = Format.pp_print_string f (Github.Scope.to_string s) in
-  parse, print
+  Arg.conv (parse, print)
 
 let complete_2fa c =
   let rec try_again f = Github.(Monad.(f () >>~ function
