@@ -1,6 +1,9 @@
-## Unreleased
+## 4.5.0 (2025-08-23)
 - Add ping a repository and org webhook. (@tmcgilchrist #263)
 - Handle "Bot" user type (@zoggy #270)
+- Add provisional support for the upcoming cmdliner 2.0.0 (@tmcgilchrist @kit-ty-kate #265 #279)
+- Add support for atdgen 2.16.0 (@kit-ty-kate #275)
+- Upgrade the GitHub REST API support to v2022-11-28 as every other versions are now unsupported (@kit-ty-kate #274)
 
 ## 4.4.1 (2022-01-26)
 - Fix older versions of github can be co-installed with github-data (@dra27 #261)
