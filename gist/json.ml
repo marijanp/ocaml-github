@@ -42,28 +42,7 @@ let rec format std (x : Yojson.t) =
     | `List l -> List (("[", ",", "]", array), List.map (format std) l)
     | `Assoc [] -> Atom ("{}", atom)
     | `Assoc l -> List (("{", ",", "}", record), List.map (format_field std) l)
-    | `Tuple l ->
-	if std then
-	  format std (`List l)
-	else
-	  if l = [] then
-	    Atom ("()", atom)
-	  else
-	    List (("(", ",", ")", tuple), List.map (format std) l)
 
-    | `Variant (s, None) ->
-	if std then
-	  format std (`String s)
-	else
-	  Atom ("<" ^ json_string_of_string s ^ ">", atom)
-
-    | `Variant (s, Some x) ->
-	if std then
-	  format std (`List [ `String s; x ])
-	else
-	  let op = "<" ^ json_string_of_string s ^ ":" in
-	  List ((op, "", ">", variant), [format std x])
-	    
 and format_field std (name, x) =
   (*let s = sprintf "%s:" (json_string_of_string name) in*)
   let s = json_string_of_ident name in
