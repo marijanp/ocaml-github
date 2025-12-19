@@ -1,5 +1,5 @@
 ## 4.5.1 (2025-12-19)
-- Upgrade the yojson dependency to 3.0.0 (@kit-ty-kate #281)
+- Upgrade the yojson dependency of github-unix to 3.0.0 (@kit-ty-kate #281)
 
 ## 4.5.0 (2025-08-23)
 - Add ping a repository and org webhook. (@tmcgilchrist #263)
