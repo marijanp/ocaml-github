@@ -1577,6 +1577,7 @@ type app_installation_webhook_event = {
   action: app_installation_webhook_action;
   installation: app_installation;
   ~repositories <ocaml default="[]">: app_installation_webhook_repository list;
+  ?requester: app_installation_webhook_requester option;
 } <ocaml field_prefix="app_installation_webhook_event_">
 
 type app_installation_webhook_repository = {
@@ -1585,6 +1586,11 @@ type app_installation_webhook_repository = {
   full_name: string;
   private: bool;
 } <ocaml field_prefix="app_installation_webhook_repository_">
+
+type app_installation_webhook_requester = {
+  id: int <ocaml repr="int64">;
+  requester: string;
+} <ocaml field_prefix="app_installation_webhook_requester_">
 
 type app_installation = {
   id: int <ocaml repr="int64">;
