@@ -499,6 +499,21 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
 
     let emojis =
       Uri.of_string (Printf.sprintf "%s/emojis" api)
+
+    let installations =
+      Uri.of_string (Printf.sprintf "%s/app/installations" api)
+
+    let installation_access_token ~id =
+      Uri.of_string (Printf.sprintf "%s/app/installations/%Ld/access_tokens" api id)
+
+    let user_app_installation ~username =
+      Uri.of_string (Printf.sprintf "%s/users/%s/installation" api username)
+
+    let user_app_installations =
+      Uri.of_string (Printf.sprintf "%s/user/installations" api)
+
+    let user_app_installation_repositories ~installation_id =
+      Uri.of_string (Printf.sprintf "%s/user/installations/%Ld/repositories" api installation_id)
   end
 
   module C = Cohttp
@@ -551,7 +566,7 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
 
     let error err = Err err
     let response r = Response r
-    let request ?token:_ ?(params=[]) ({ uri; _ } as req) reqfn =
+    let request ?(params=[]) ({ uri; _ } as req) reqfn =
       let uri = Uri.add_query_params' uri params in
       Request ({req with uri}, reqfn)
 
@@ -885,7 +900,7 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
         fn =
       fun state -> Lwt.return
         (state,
-         (Monad.(request ?token ?params
+         (Monad.(request ?params
                    {meth; uri; headers=realize_headers ~token ?media_type headers; body=""})
             (request ~rate ~token
                ((code_handler ~expected_code fn)::fail_handlers))))
@@ -902,7 +917,7 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
       ) fail_handlers in
       fun state -> Lwt.return
         (state,
-        (Monad.(request ?token ?params
+        (Monad.(request ?params
                   {meth; uri; headers=realize_headers ~token headers; body })
            (request ~rate ~token
               ((code_handler ~expected_code fn)::fail_handlers))))
@@ -1311,6 +1326,8 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
         | `Gist -> `Gist
         | `Gollum ->
           `Gollum (Github_j.gollum_event_of_string payload)
+        | `Installation ->
+          `Installation (Github_j.app_installation_webhook_event_of_string payload)
         | `IssueComment ->
           `IssueComment (Github_j.issue_comment_event_of_string payload)
         | `Issues ->
@@ -1864,6 +1881,46 @@ module Make(Env : Github_s.Env)(Time : Github_s.Time)(CL : Cohttp_lwt.S.Client)
     let delete ?token ~user ~repo ~name () =
       let uri = URI.repo_label ~user ~repo ~name in
       API.delete ?token ~uri ~expected_code:`No_content (fun _ -> return ())
+  end
+
+  module App = struct
+
+    let installations ?token ?since ?per_page ?page () =
+      let params = [] in
+      let params = match since with
+        | None -> params
+        | Some s -> ("since", s)::params
+      in
+      let params = match per_page with
+        | None -> params
+        | Some i -> ("per_page", string_of_int i)::params
+      in
+      let params = match page with
+        | None -> params
+        | Some i -> ("page", string_of_int i)::params
+      in
+      let uri = URI.installations in
+      API.get_stream ?token ~params ~uri (fun b -> Lwt.return (app_installations_of_string b))
+
+    let create_installation_access_token ?token ~installation_id () =
+      let uri = URI.installation_access_token ~id:installation_id in
+      API.post ?token ~uri ~expected_code:`Created (fun b -> Lwt.return (app_installation_token_of_string b))
+
+    let user_app_installation ?token ~username () =
+      let uri = URI.user_app_installation ~username in
+      API.get ?token ~uri (fun b -> Lwt.return (user_app_installation_of_string b))
+  end
+
+  module AppInstallation = struct
+
+    let user_app_installations ?token () =
+      let uri = URI.user_app_installations in
+      API.get ?token ~uri (fun b -> Lwt.return (app_installations_list_of_string b))
+
+    let user_app_installation_repositories ?token ~installation_id () =
+      let uri = URI.user_app_installation_repositories ~installation_id in
+      API.get ?token ~uri (fun b ->
+          Lwt.return (user_app_installation_repositories_of_string b))
   end
 
   module Collaborator = struct

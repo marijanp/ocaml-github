@@ -961,6 +961,7 @@ type event_type = [
   | ForkApply <json name="fork_apply">
   | Gist <json name="gist">
   | Gollum <json name="gollum">
+  | Installation <json name="installation">
   | IssueComment <json name="issue_comment">
   | Issues <json name="issues">
   | Member <json name="member">
@@ -1045,6 +1046,7 @@ type event_hook_constr = [
   | Gist <json name="GistEvent">
   (* Deprecated but there may be a payload object... *)
   | Gollum <json name="GollumEvent"> of gollum_event
+  | Installation <json name="InstallationEvent"> of app_installation_webhook_event
   | IssueComment <json name="IssueCommentEvent"> of issue_comment_event
   | Issues <json name="IssuesEvent"> of issues_event
   | Member <json name="MemberEvent"> of member_event
@@ -1406,6 +1408,7 @@ type check_run_app_permissions = {
 
 type check_app = {
   id: int <ocaml repr="int64">;
+  client_id: string;
   slug: string;
   node_id: string;
   owner: user;
@@ -1558,3 +1561,69 @@ type app_installation_event = {
   id: int <ocaml repr="int64">;
   node_id: string;
 } <ocaml field_prefix="app_installation_event_">
+
+type repository_selection = [
+  | All <json name="all">
+  | Selected <json name="selected">
+]
+
+type app_installation_webhook_action = [
+  | Created <json name="created">
+  | Deleted <json name="deleted">
+  | Unknown of (string * t nullable)
+]
+
+type app_installation_webhook_event = {
+  action: app_installation_webhook_action;
+  installation: app_installation;
+  ~repositories <ocaml default="[]">: app_installation_webhook_repository list;
+  ?requester: app_installation_webhook_requester option;
+} <ocaml field_prefix="app_installation_webhook_event_">
+
+type app_installation_webhook_repository = {
+  id: int <ocaml repr="int64">;
+  name: string;
+  full_name: string;
+  private: bool;
+} <ocaml field_prefix="app_installation_webhook_repository_">
+
+type app_installation_webhook_requester = {
+  id: int <ocaml repr="int64">;
+  requester: string;
+} <ocaml field_prefix="app_installation_webhook_requester_">
+
+type app_installation = {
+  id: int <ocaml repr="int64">;
+  account: user;
+  access_tokens_url: string;
+  repository_selection: repository_selection;
+  repositories_url: string;
+  app_id: int;
+  target_id: int;
+  target_type: string;
+  created_at: string;
+  updated_at: string;
+} <ocaml field_prefix="app_installation_">
+
+type app_installations_list = {
+  total_count: int <ocaml repr="int64">;
+  installations: app_installation list;
+}
+
+type app_installations = app_installation list
+
+type app_installation_token = {
+  token: string;
+  expires_at: string;
+  ?repositories: repository list option;
+} <ocaml field_prefix="app_installation_token_">
+
+type user_app_installation = {
+  id: int <ocaml repr="int64">;
+  account: user;
+} <ocaml field_prefix="user_app_installation_">
+
+type user_app_installation_repositories = {
+  total_count: int <ocaml repr="int64">;
+  repositories: repositories;
+} <ocaml field_prefix="user_app_installation_repositories_">

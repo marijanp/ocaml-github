@@ -1371,6 +1371,64 @@ module type Github = sig
           in the repo [user]/[repo] has been removed. *)
   end
 
+  (** The [Apps] module offers the functionality of GitHub's
+      {{:https://docs.github.com/rest/reference/apps}apps API}. *)
+  module App : sig
+    val installations :
+      ?token:Token.t ->
+      ?since:string ->
+      ?per_page:int ->
+      ?page:int ->
+      unit ->
+      Github_t.app_installation Stream.t
+    (** [installations ()] is a stream of GitHub App installations for the given App JWT
+        timestamp (YYYY-MM-DDTHH:MM:SSZ) [?since].
+        {{:https://docs.github.com/en/rest/apps/apps#list-installations-for-the-authenticated-app}
+        Link to docs.} *)
+
+    val create_installation_access_token:
+      ?token:Token.t ->
+      installation_id: Int64.t ->
+      unit ->
+      Github_t.app_installation_token Response.t Monad.t
+    (** [create_installation_access_token ~installation_id ()] creates an installation access token
+        for the GitHub App installation with the ID [installation_id]
+        {{:https://docs.github.com/en/rest/apps/apps#create-an-installation-access-token-for-an-app}
+        Link to docs.} *)
+
+    val user_app_installation :
+      ?token:Token.t ->
+      username:string ->
+      unit ->
+      Github_t.user_app_installation Response.t Monad.t
+    (** [user_app_installation ~username ()] gets a GitHub App installation of a user
+        for the authenticated GitHub App.
+        {{:https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-a-user-installation-for-the-authenticated-app}
+        Link to docs.} *)
+  end
+
+  module AppInstallation : sig
+    val user_app_installations :
+      ?token:Token.t ->
+      unit ->
+      Github_t.app_installations_list Response.t Monad.t
+    (** [user_app_installations ()] gets all GitHub App installations of a user
+        for the given user token.
+        {{:https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28#list-app-installations-accessible-to-the-user-access-token}
+        Link to docs.} *)
+
+    val user_app_installation_repositories:
+      ?token:Token.t ->
+      installation_id:int64 ->
+      unit ->
+      Github_t.user_app_installation_repositories Response.t Monad.t
+    (** [user_app_installation_repositories ~installation_id ()] returns a list of repositories
+        accessible to a user for a GitHub App [installation_id].
+        {{:https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28#list-repositories-accessible-to-the-user-access-token}
+        Link to docs.} *)
+  end
+
+
   (** The [Collaborator] module exposes Github's
       {{:https://docs.github.com/rest/reference/repos#collaborators}
       collaborators API}. *)
